@@ -18,7 +18,7 @@ def generate_launch_description():
     robot_name  = _raw_robot['robot_name']
     robot_model = _raw_robot['robot_model']
     robot_package_name = f"{robot_model}_pkg"
-    default_map = _raw_robot.get('default_map', 'rtabmap.db')
+    default_map = _raw_robot.get('default_map') or 'rtabmap.db'
 
     # Define the database path centrally
     database_path = os.path.join(

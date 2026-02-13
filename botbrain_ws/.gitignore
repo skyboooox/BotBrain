@@ -1,6 +1,0 @@
-# Ignore directories managed by the build system and vcstool
-/build
-/install
-/log
-/.vscode
-/.env

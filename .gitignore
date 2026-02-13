@@ -1,0 +1,10 @@
+# Environment variables
+.env
+
+# IDE
+.vscode
+
+# Directories managed by the build system and vcstool
+botbrain_ws/build
+botbrain_ws/install
+botbrain_ws/log

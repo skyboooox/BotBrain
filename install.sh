@@ -396,7 +396,7 @@ fi
 
 # Supabase configuration page
 dialog --title "Supabase Configuration" \
-       --yesno "\nWould you like to configure Supabase credentials for the web server?\n\nThis is required for the web interface to work properly.\n\nYou can skip this step and configure it later in the .env file if needed." 12 70
+       --yesno "\nWould you like to configure Supabase credentials for the web server?\n\n*** THIS IS REQUIRED FOR THE WEB INTERFACE TO WORK PROPERLY ***\n\nYou can skip this step and configure it later in the .env file if needed." 12 70
 
 if [ $? -eq 0 ]; then
     # Create temporary file for the form
@@ -434,6 +434,15 @@ else
     SUPABASE_URL=""
     SUPABASE_ANON_KEY=""
     echo "Supabase configuration skipped (you can configure it later in the .env file)"
+
+    # Create .env file with placeholder credentials to allow build to complete
+    ENV_FILE=".env"
+    cat > "$ENV_FILE" << EOF
+NEXT_PUBLIC_SUPABASE_URL=https://placeholder.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=placeholder-anon-key-replace-with-real-credentials
+EOF
+
+    echo "Created .env file with placeholder credentials at $ENV_FILE"
 fi
 
 # Front camera selection page
@@ -666,13 +675,15 @@ if [ -f "docker-compose.yml" ] || [ -f "docker-compose.yaml" ]; then
     show_progress_animated "7" "-" "-" "-" &
     DIALOG_PID=$!
 
-    docker compose pull --quiet > /dev/null 2>&1
+    echo "=== Docker Compose Pull Output ===" >> /tmp/install_log.txt
+    docker compose pull >> /tmp/install_log.txt 2>&1
     PULL_RESULT=$?
 
     kill $DIALOG_PID 2>/dev/null
     wait $DIALOG_PID 2>/dev/null
 
     echo "Docker pull exit code: $PULL_RESULT" >> /tmp/install_log.txt
+    echo "" >> /tmp/install_log.txt
 
     if [ $PULL_RESULT -ne 0 ]; then
         dialog --title "Installation Error" --msgbox "Failed to pull Docker images.\n\nCheck /tmp/install_log.txt for details." 10 70
@@ -771,10 +782,12 @@ fi
 show_progress_animated "0" "0" "0" "7" &
 DIALOG_PID=$!
 
-docker compose up -d builder_base builder_yolo web_server_builder > /dev/null 2>&1
+echo "=== Docker Compose Up Builder Services Output ===" >> /tmp/install_log.txt
+docker compose up -d builder_base builder_yolo web_server_builder >> /tmp/install_log.txt 2>&1
 BUILD_RESULT=$?
 
 echo "Docker compose up exit code: $BUILD_RESULT" >> /tmp/install_log.txt
+echo "" >> /tmp/install_log.txt
 
 if [ $BUILD_RESULT -ne 0 ]; then
     kill $DIALOG_PID 2>/dev/null
