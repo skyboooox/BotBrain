@@ -1,5 +1,22 @@
 #!/bin/bash
 
+# === Read network interface from robot_config.yaml ===
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROBOT_CONFIG_PATH="$SCRIPT_DIR/../../robot_config.yaml"
+
+if [ ! -f "$ROBOT_CONFIG_PATH" ]; then
+    echo "Error: robot_config.yaml not found at $ROBOT_CONFIG_PATH"
+    return 1 2>/dev/null || exit 1
+fi
+
+NETWORK_IFACE=$(python3 -c "import yaml; config = yaml.safe_load(open('$ROBOT_CONFIG_PATH')); print(config['robot_configuration']['network_interface'])" 2>/dev/null)
+if [ -z "$NETWORK_IFACE" ]; then
+    echo "Error: Could not read network_interface from robot_config.yaml"
+    return 1 2>/dev/null || exit 1
+fi
+
+echo "Network interface from config: $NETWORK_IFACE"
+
 # === ROS Environment Variables ===
 unset ROS_DOMAIN_ID
 unset RMW_IMPLEMENTATION
