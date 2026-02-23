@@ -18,7 +18,7 @@ then
 else
     # === Network Configuration Variables ===
     # IFACE=$(nmcli -t -f DEVICE,TYPE device status | awk -F: '$2=="ethernet" {print $1; exit}')
-    IFACE="eno1"
+    IFACE="$NETWORK_IFACE"
     echo "Ethernet interface: $IFACE"
     IP="192.168.123.174"
     NETMASK="255.255.255.0"
