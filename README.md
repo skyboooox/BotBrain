@@ -286,6 +286,8 @@ The web dashboard requires Supabase for authentication and data storage. You'll 
 
 ### 3. Software Setup
 
+> **[G1 WiFi Setup Guide](docs/g1-wifi-setup.md)** - If you are using G1 robot, please refeer to this docs before.
+
 #### External Dependencies
 
 **Operating System:**
