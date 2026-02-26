@@ -208,10 +208,10 @@ if [ "$ROBOT_MODEL" = "tita" ]; then
 fi
 
 # If G1 Internal is selected, prompt for web port
-G1_INTERNAL_PORT="80"
+WEB_PORT="80"
 if [ "$ROBOT_MODEL" = "g1-internal" ]; then
     # Set WEB_PORT to 3000
-    G1_INTERNAL_PORT="3000"
+    WEB_PORT="3000"
 
     # Set ROBOT_MODEL to g1, so can find g1_pkg
     ROBOT_MODEL="g1"
@@ -445,7 +445,7 @@ if [ $? -eq 0 ]; then
     cat > "$ENV_FILE" << EOF
 NEXT_PUBLIC_SUPABASE_URL=$SUPABASE_URL
 NEXT_PUBLIC_SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY
-PORT=$G1_INTERNAL_PORT
+PORT=$WEB_PORT
 EOF
 
     echo "Created Supabase .env file at $ENV_FILE"
@@ -459,7 +459,7 @@ else
     cat > "$ENV_FILE" << EOF
 NEXT_PUBLIC_SUPABASE_URL=https://placeholder.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=placeholder-anon-key-replace-with-real-credentials
-PORT=$G1_INTERNAL_PORT
+PORT=$WEB_PORT
 EOF
 
     echo "Created .env file with placeholder credentials at $ENV_FILE"
