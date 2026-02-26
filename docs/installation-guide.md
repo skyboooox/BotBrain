@@ -36,10 +36,11 @@ This guide walks you through each step of the BotBrain installation process, exp
 
 Select the robot model you're using for this workspace.
 
-![Robot Model Selection](images/installation/02-robot-model-selection.png)
+<img src="images/installation/02-robot-model-selection.png" width="640">
 
 **How to choose:**
 - Select the model that matches your physical robot
+- If you are using G1 Internal Jetson, please select g1-internal (this will change WEB_PORT to 3000)
 - If your robot is not listed, select "other" and you'll be prompted to enter a custom name
 
 **If you select "other":**

@@ -1,4 +1,11 @@
 #!/bin/bash
+
+if [ "$EUID" -ne 0 ]; then
+    echo "Error: this script must be run with sudo."
+    echo "Please run: sudo ./install.sh"
+    exit 1
+fi
+
 USER_HOME="$(getent passwd "${SUDO_USER:-$USER}" | cut -d: -f6)"
 export PATH="$USER_HOME/.local/bin:$PATH"
 
@@ -152,9 +159,10 @@ fi
 
 # Robot model selection page
 ROBOT_MODEL=$(dialog --title "Robot Model Selection" \
-                     --menu "\nSelect your robot model:" 15 70 4 \
+                     --menu "\nSelect your robot model:" 15 70 5 \
                      "go2" "Unitree Go2" \
                      "g1" "Unitree G1" \
+                     "g1-internal" "Unitree G1 Internal Jetson" \
                      "tita" "Tita" \
                      "other" "Custom Robot" \
                      3>&1 1>&2 2>&3)
@@ -197,6 +205,16 @@ if [ "$ROBOT_MODEL" = "tita" ]; then
     fi
 
     echo "Tita namespace: $TITA_NAMESPACE"
+fi
+
+# If G1 Internal is selected, prompt for web port
+G1_INTERNAL_PORT="80"
+if [ "$ROBOT_MODEL" = "g1-internal" ]; then
+    # Set WEB_PORT to 3000
+    G1_INTERNAL_PORT="3000"
+
+    # Set ROBOT_MODEL to g1, so can find g1_pkg
+    ROBOT_MODEL="g1"
 fi
 
 # Description file type selection page
@@ -427,6 +445,7 @@ if [ $? -eq 0 ]; then
     cat > "$ENV_FILE" << EOF
 NEXT_PUBLIC_SUPABASE_URL=$SUPABASE_URL
 NEXT_PUBLIC_SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY
+PORT=$G1_INTERNAL_PORT
 EOF
 
     echo "Created Supabase .env file at $ENV_FILE"
@@ -440,6 +459,7 @@ else
     cat > "$ENV_FILE" << EOF
 NEXT_PUBLIC_SUPABASE_URL=https://placeholder.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=placeholder-anon-key-replace-with-real-credentials
+PORT=$G1_INTERNAL_PORT
 EOF
 
     echo "Created .env file with placeholder credentials at $ENV_FILE"
