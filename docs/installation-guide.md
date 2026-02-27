@@ -6,26 +6,29 @@ This guide walks you through each step of the BotBrain installation process, exp
 
 ## Table of Contents
 
-1. [Welcome Screen](#1-welcome-screen)
-2. [Robot Model Selection](#2-robot-model-selection)
-3. [Tita Namespace Configuration](#3-tita-namespace-configuration-tita-only)
-4. [Description File Type](#4-description-file-type)
-5. [Robot Name Configuration](#5-robot-name-configuration)
-6. [Network Interface Selection](#6-network-interface-selection)
-7. [Wi-Fi Interface Selection](#7-wi-fi-interface-selection)
-8. [Wi-Fi Credentials](#8-wi-fi-credentials)
-9. [OpenAI API Key](#9-openai-api-key)
-10. [Supabase Configuration](#10-supabase-configuration)
-11. [Front Camera Selection](#11-front-camera-selection)
-12. [Rear Camera Selection](#12-rear-camera-selection)
-13. [Installation Confirmation](#13-installation-confirmation)
-14. [Installation Progress](#14-installation-progress)
+- [BotBrain Workspace Installation Guide](#botbrain-workspace-installation-guide)
+  - [Table of Contents](#table-of-contents)
+  - [1. Welcome Screen](#1-welcome-screen)
+  - [2. Robot Model Selection](#2-robot-model-selection)
+  - [3. Tita Namespace Configuration (Tita Only)](#3-tita-namespace-configuration-tita-only)
+  - [4. Description File Type](#4-description-file-type)
+  - [5. Robot Name Configuration](#5-robot-name-configuration)
+  - [6. Network Interface Selection](#6-network-interface-selection)
+  - [7. Wi-Fi Interface Selection](#7-wi-fi-interface-selection)
+  - [8. Wi-Fi Credentials](#8-wi-fi-credentials)
+  - [9. OpenAI API Key](#9-openai-api-key)
+  - [10. Supabase Configuration](#10-supabase-configuration)
+  - [11. Front Camera Selection](#11-front-camera-selection)
+  - [12. Rear Camera Selection](#12-rear-camera-selection)
+  - [13. Installation Confirmation](#13-installation-confirmation)
+  - [14. Installation Progress](#14-installation-progress)
+  - [Summary](#summary)
 
 ---
 
 ## 1. Welcome Screen
 
-![Welcome Screen](images/installation/01-welcome-screen.png)
+![Welcome Screen](images/installation/main_script/01-welcome-screen.png)
 
 **What to do:**
 - Press OK to continue or ESC to cancel the installation
@@ -36,7 +39,7 @@ This guide walks you through each step of the BotBrain installation process, exp
 
 Select the robot model you're using for this workspace.
 
-<img src="images/installation/02-robot-model-selection.png" width="640">
+![Robot Model Selection](images/installation/main_script/02-robot-model-selection.png)
 
 **How to choose:**
 - Select the model that matches your physical robot
@@ -45,7 +48,7 @@ Select the robot model you're using for this workspace.
 
 **If you select "other":**
 
-![Custom Robot Model](images/installation/02b-custom-robot-model.png)
+![Custom Robot Model](images/installation/main_script/02b-custom-robot-model.png)
 
 Enter your custom robot model name using lowercase letters, numbers, and underscores.
 
@@ -55,7 +58,7 @@ Enter your custom robot model name using lowercase letters, numbers, and undersc
 
 If you selected "tita" as your robot model, you'll need to configure the Tita namespace.
 
-![Tita Namespace](images/installation/03-tita-namespace.png)
+![Tita Namespace](images/installation/main_script/03-tita-namespace.png)
 
 **How to obtain:**
 - Check the published topics of your Tita
@@ -66,7 +69,7 @@ If you selected "tita" as your robot model, you'll need to configure the Tita na
 
 Select the format for your robot description file.
 
-![Description File Type](images/installation/04-description-file-type.png)
+![Description File Type](images/installation/main_script/04-description-file-type.png)
 
 **Available options:**
 - **xacro** - XML Macros for URDF (recommended for complex robots with parametric models)
@@ -83,7 +86,7 @@ Select the format for your robot description file.
 
 Choose whether to set a custom name for your robot.
 
-![Robot Name Prompt](images/installation/05-robot-name-prompt.png)
+![Robot Name Prompt](images/installation/main_script/05-robot-name-prompt.png)
 
 **What is the robot name:**
 - A custom namespace used for all ROS2 topics, services, actions, and nodes
@@ -97,7 +100,7 @@ Choose whether to set a custom name for your robot.
 
 **If you select "Yes":**
 
-![Robot Name Input](images/installation/05b-robot-name-input.png)
+![Robot Name Input](images/installation/main_script/05b-robot-name-input.png)
 
 **Naming rules:**
 - Use lowercase letters, numbers, and underscores only
@@ -110,7 +113,7 @@ Choose whether to set a custom name for your robot.
 
 Select the network interface that will be used for ROS2 DDS communication.
 
-![Network Interface Selection](images/installation/06-network-interface-selection.png)
+![Network Interface Selection](images/installation/main_script/06-network-interface-selection.png)
 
 **What is this:**
 - The network interface through which ROS2 will communicate, usually the phisical ethernet connection with your robot
@@ -136,7 +139,7 @@ ifconfig -a
 
 **If none are detected or you need a custom interface:**
 
-![Custom Network Interface](images/installation/06b-custom-network-interface.png)
+![Custom Network Interface](images/installation/main_script/06b-custom-network-interface.png)
 
 Enter the interface name manually.
 
@@ -146,7 +149,7 @@ Enter the interface name manually.
 
 Select the Wi-Fi interface for wireless connectivity.
 
-![Wi-Fi Interface Selection](images/installation/07-wifi-interface-selection.png)
+![Wi-Fi Interface Selection](images/installation/main_script/07-wifi-interface-selection.png)
 
 **What is this:**
 - The wireless network interface on your system
@@ -164,7 +167,7 @@ iwconfig
 
 **If you need to enter a custom interface:**
 
-![Custom Wi-Fi Interface](images/installation/07b-custom-wifi-interface.png)
+![Custom Wi-Fi Interface](images/installation/main_script/07b-custom-wifi-interface.png)
 
 ---
 
@@ -172,7 +175,7 @@ iwconfig
 
 Enter the default Wi-Fi network credentials for automatic connection.
 
-![Wi-Fi Credentials](images/installation/08-wifi-credentials.png)
+![Wi-Fi Credentials](images/installation/main_script/08-wifi-credentials.png)
 
 **What to enter:**
 - **SSID**: The name of your Wi-Fi network
@@ -193,7 +196,7 @@ Enter the default Wi-Fi network credentials for automatic connection.
 
 Optionally configure an OpenAI API key for GPT-powered features.
 
-![OpenAI API Key Prompt](images/installation/09-openai-api-key-prompt.png)
+![OpenAI API Key Prompt](images/installation/main_script/09-openai-api-key-prompt.png)
 
 **What is this:**
 - API key for accessing OpenAI's GPT models
@@ -202,7 +205,7 @@ Optionally configure an OpenAI API key for GPT-powered features.
 
 **If you select "Yes":**
 
-![OpenAI API Key Input](images/installation/09b-openai-api-key-input.png)
+![OpenAI API Key Input](images/installation/main_script/09b-openai-api-key-input.png)
 
 **How to obtain:**
 1. Visit [https://platform.openai.com/api-keys](https://platform.openai.com/api-keys)
@@ -220,7 +223,7 @@ Optionally configure an OpenAI API key for GPT-powered features.
 
 Configure Supabase credentials for the web server interface.
 
-![Supabase Configuration Prompt](images/installation/10-supabase-prompt.png)
+![Supabase Configuration Prompt](images/installation/main_script/10-supabase-prompt.png)
 
 **What is this:**
 - Supabase is used for the web interface backend
@@ -229,7 +232,7 @@ Configure Supabase credentials for the web server interface.
 
 **If you select "Yes":**
 
-![Supabase Credentials](images/installation/10b-supabase-credentials.png)
+![Supabase Credentials](images/installation/main_script/10b-supabase-credentials.png)
 
 **How to obtain:**
 See [Supabase Setup](SUPABASE_SETUP.md)
@@ -245,7 +248,7 @@ See [Supabase Setup](SUPABASE_SETUP.md)
 
 Select the camera model for the front-facing camera.
 
-![Front Camera Selection](images/installation/11-front-camera-selection.png)
+![Front Camera Selection](images/installation/main_script/11-front-camera-selection.png)
 
 **How to choose:**
 - Match the model with your physical camera
@@ -254,7 +257,7 @@ Select the camera model for the front-facing camera.
 
 **If you select a camera model:**
 
-![Front Camera Serial Number](images/installation/11b-front-camera-serial.png)
+![Front Camera Serial Number](images/installation/main_script/11b-front-camera-serial.png)
 
 **How to find the serial number:**
 
@@ -279,7 +282,7 @@ This will display all connected RealSense cameras with their serial numbers.
 
 Select the camera model for the rear-facing camera.
 
-![Rear Camera Selection](images/installation/12-rear-camera-selection.png)
+![Rear Camera Selection](images/installation/main_script/12-rear-camera-selection.png)
 
 **How to choose:**
 - Match the model with your physical camera
@@ -288,7 +291,7 @@ Select the camera model for the rear-facing camera.
 
 **If you select a camera model:**
 
-![Rear Camera Serial Number](images/installation/12b-rear-camera-serial.png)
+![Rear Camera Serial Number](images/installation/main_script/12b-rear-camera-serial.png)
 
 **How to find the serial number:**
 - Same process as the front camera
@@ -299,7 +302,7 @@ Select the camera model for the rear-facing camera.
 
 Review your configuration before proceeding with the installation.
 
-![Installation Confirmation](images/installation/13-installation-confirmation.png)
+![Installation Confirmation](images/installation/main_script/13-installation-confirmation.png)
 
 **What this shows:**
 - Summary of all your configuration choices
@@ -328,7 +331,7 @@ Review your configuration before proceeding with the installation.
 
 Track the installation progress as each task completes.
 
-![Installation Progress](images/installation/14-installation-progress.png)
+![Installation Progress](images/installation/main_script/14-installation-progress.png)
 
 **Progress indicators:**
 - **✓** - Task completed successfully
@@ -338,7 +341,7 @@ Track the installation progress as each task completes.
 
 **Upon completion:**
 
-![Installation Complete](images/installation/14b-installation-complete.png)
+![Installation Complete](images/installation/main_script/14b-installation-complete.png)
 
 **What happens next:**
 - All configuration files are updated
