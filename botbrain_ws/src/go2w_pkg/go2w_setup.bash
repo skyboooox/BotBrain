@@ -1,5 +1,22 @@
 #!/bin/bash
 
+# === Read network interface from robot_config.yaml ===
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROBOT_CONFIG_PATH="$SCRIPT_DIR/../../robot_config.yaml"
+
+if [ ! -f "$ROBOT_CONFIG_PATH" ]; then
+    echo "Error: robot_config.yaml not found at $ROBOT_CONFIG_PATH"
+    return 1 2>/dev/null || exit 1
+fi
+
+NETWORK_IFACE=$(python3 -c "import yaml; config = yaml.safe_load(open('$ROBOT_CONFIG_PATH')); print(config['robot_configuration']['network_interface'])" 2>/dev/null)
+if [ -z "$NETWORK_IFACE" ]; then
+    echo "Error: Could not read network_interface from robot_config.yaml"
+    return 1 2>/dev/null || exit 1
+fi
+
+echo "Network interface from config: $NETWORK_IFACE"
+
 # === ROS Environment Variables ===
 unset ROS_DOMAIN_ID
 unset RMW_IMPLEMENTATION
@@ -10,6 +27,7 @@ export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # Export CYCLONEDDS_URI pointing to the XML file in the same directory
 export CYCLONEDDS_URI="file://${SCRIPT_DIR}/../../cyclonedds_config.xml"
+
 # === Network Configuration Check ===
 if ! command -v nmcli &> /dev/null
 then
@@ -17,18 +35,11 @@ then
     # The script continues to run without exiting
 else
     # === Network Configuration Variables ===
-#    IFACE=$(nmcli -t -f DEVICE,TYPE device status | awk -F: '$2=="ethernet" {print $1; exit}')
-    IFACE="eno1"
+    IFACE="$NETWORK_IFACE"
     echo "Ethernet interface: $IFACE"
     IP="192.168.123.170"
     NETMASK="255.255.255.0"
     GATEWAY="192.168.123.1"
-
-    # IFACE4G="enx344b50000000"
-    # echo "Ethernet interface: $IFACE4G"
-    # IP4G="192.168.0.115"
-    # NETMASK4G="255.255.255.0"
-    # GATEWAY4G="192.168.0.1"
 
     # === Step 1a: Find the active connection name for the specified interface ===
     echo "Searching for the active connection on interface $IFACE..."

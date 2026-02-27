@@ -1,7 +1,7 @@
 camera_configuration:
   front: 
-    type: "d455"
-    serial_number: "313522301329"
+    type: ""
+    serial_number: ""
     parent_frame: "botbrain_base"
     child_frame: "front_camera_link"
     tf:
@@ -12,8 +12,8 @@ camera_configuration:
       pitch: 0.0
       yaw: 0.0
   back: 
-    type: "d435i"
-    serial_number: "243222076123"
+    type: ""
+    serial_number: ""
     parent_frame: "botbrain_base"
     child_frame: "back_camera_link"
     tf:
