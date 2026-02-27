@@ -1,0 +1,12 @@
+rtabmap:
+  local: true
+rtabmap_copy:
+  local: true
+rtabmap_old:
+  local: true
+teste:
+  local: true
+teste1:
+  local: true
+teste2:
+  local: true

@@ -161,6 +161,7 @@ fi
 ROBOT_MODEL=$(dialog --title "Robot Model Selection" \
                      --menu "\nSelect your robot model:" 15 70 5 \
                      "go2" "Unitree Go2" \
+                     "go2w" "Unitree Go2W" \
                      "g1" "Unitree G1" \
                      "g1-internal" "Unitree G1 Internal Jetson" \
                      "tita" "Tita" \
