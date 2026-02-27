@@ -367,7 +367,10 @@ Find your Jetson's IP address:
 hostname -I
 ```
 
-> **Note:** Ensure both devices are on the same network and port 80 is not blocked by a firewall.
+> **Note:** Ensure both devices are on the same network and port 80 is not blocked by a firewall. 
+
+
+> **Note:** Also if you selected g1-internal, your web port will be 3000. So your web ip will be: http://<JETSON_IP>:3000
 
 ---
 
