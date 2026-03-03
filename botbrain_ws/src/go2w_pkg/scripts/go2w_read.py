@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-import time
 import rclpy
 from rclpy.lifecycle import LifecycleNode, TransitionCallbackReturn
 from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy
@@ -237,12 +236,15 @@ class RobotWrite(LifecycleNode):
 def main(args=None):
     rclpy.init(args=args)
     node = RobotWrite()
-    period = 1.0 / 20.0  # 20 Hz
-    while rclpy.ok():
-        for _ in range(4):
-            rclpy.spin_once(node, timeout_sec=0)
-        time.sleep(period)
-    rclpy.shutdown()
+    executor = rclpy.executors.SingleThreadedExecutor()
+    executor.add_node(node)
+    try:
+        executor.spin()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        node.destroy_node()
+        rclpy.shutdown()
 
 if __name__ == '__main__':
     main()
