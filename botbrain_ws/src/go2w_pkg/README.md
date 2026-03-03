@@ -66,7 +66,9 @@ Lifecycle node that bridges Unitree DDS data into standard ROS 2 topics.
 | `joint_states` | `sensor_msgs/JointState` | All 16 joint positions and velocities |
 | `motor_temp` | `bot_custom_interfaces/MotorTemperature` | Per-motor temperatures |
 
-Also broadcasts the `odom → base_link` TF transform.
+Also broadcasts the `{prefix}odom → {prefix}base_link` TF transform.
+
+> All topics listed above are published under the robot namespace (`/{robot_name}/`) as configured in `robot_config.yaml`.
 
 ---
 
@@ -110,20 +112,9 @@ Lifecycle node that maps physical controller button presses to robot service cal
 | Button Combo | Action |
 |---|---|
 | `start` | `balance_stand` (or exit pose mode if in mode 2) |
-| `select` | Enter pose mode |
 | `L2 + A` | Toggle `stand_up` / `stand_down` |
 | `L2 + B` | `damp` |
-| `L2 + start` | Switch gait 2 |
-| `right + start` | Switch gait 3 |
-| `left + start` | Switch gait 4 |
 | `L2 + X` | `recovery_stand` |
-| `R2 + A` | `stretch` |
-| `R2 + B` | `hello` |
-| `R2 + Y` | `finger_heart` |
-| `R1 + X` | `front_pounce` |
-| `R1 + A` | `front_jump` |
-| `R1 + B` | `sit` (or `rise_sit` if already sitting) |
-| `L1 + B` | `dance1` |
 
 ---
 

@@ -66,7 +66,9 @@ Nó de ciclo de vida que faz a ponte entre os dados DDS da Unitree e os tópicos
 | `joint_states` | `sensor_msgs/JointState` | Posições e velocidades de todas as 16 juntas |
 | `motor_temp` | `bot_custom_interfaces/MotorTemperature` | Temperaturas por motor |
 
-Também transmite a transformada TF `odom → base_link`.
+Também transmite a transformada TF `{prefix}odom → {prefix}base_link`.
+
+> Todos os tópicos listados acima são publicados sob o namespace do robô (`/{robot_name}/`), conforme configurado em `robot_config.yaml`.
 
 ---
 
@@ -110,20 +112,9 @@ Nó de ciclo de vida que mapeia pressionamentos de botões do controle físico p
 | Combinação de Botões | Ação |
 |---|---|
 | `start` | `balance_stand` (ou sair do modo de pose se estiver no modo 2) |
-| `select` | Entrar no modo de pose |
 | `L2 + A` | Alternar `stand_up` / `stand_down` |
 | `L2 + B` | `damp` |
-| `L2 + start` | Alternar marcha 2 |
-| `right + start` | Alternar marcha 3 |
-| `left + start` | Alternar marcha 4 |
 | `L2 + X` | `recovery_stand` |
-| `R2 + A` | `stretch` |
-| `R2 + B` | `hello` |
-| `R2 + Y` | `finger_heart` |
-| `R1 + X` | `front_pounce` |
-| `R1 + A` | `front_jump` |
-| `R1 + B` | `sit` (ou `rise_sit` se já estiver sentado) |
-| `L1 + B` | `dance1` |
 
 ---
 
