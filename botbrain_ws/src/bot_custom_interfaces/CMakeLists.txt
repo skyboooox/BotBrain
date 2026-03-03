@@ -54,6 +54,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/StateMachine.srv"
   "srv/ArmCmd.srv"
   "msg/Names.msg"
+  "msg/MotorTemperature.msg"
   DEPENDENCIES std_msgs
 )
 
