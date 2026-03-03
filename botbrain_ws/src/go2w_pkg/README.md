@@ -1,139 +1,211 @@
-# go2_pkg
+# go2w_pkg
 
-The Go2 robot-specific package for the R1 robot platform. This package provides all the necessary components, configurations, and interfaces specifically designed for the Unitree Go2 quadruped robot.
+The Go2W robot-specific package for the BotBrain platform. This package provides all the necessary components, configurations, and interfaces specifically designed for the Unitree Go2W wheeled-quadruped robot.
 
 ## Description
 
-The `go2_pkg` package serves as the robot-specific implementation for the Unitree Go2 quadruped robot platform. It contains all the hardware-specific configurations, service definitions, robot description files, and control interfaces required to operate the Go2 robot within the R1 robot system.
+The `go2w_pkg` package serves as the robot-specific implementation for the Unitree Go2W. It bridges the Unitree SDK's DDS topics to the ROS 2 ecosystem, handling sensor data reading, robot command writing, joystick/controller input mapping, and video streaming. All nodes follow the ROS 2 lifecycle pattern.
 
 ## Directory Structure
 
 ```
-go2_pkg/
-├── action/                      # ROS2 action definitions
+go2w_pkg/
 ├── config/                      # Configuration files
+│   ├── camera_config.yaml      # RealSense camera TF and serial numbers
 │   ├── nav2_params.yaml        # Nav2 navigation parameters
-│   ├── nav2_params_new.yaml    # Updated Nav2 parameters
-│   ├── nav2_params_old.yaml    # Legacy Nav2 parameters
 │   └── pointcloud_to_laserscan_params.yaml  # Point cloud to laser scan conversion
-├── go2_pkg/                     # Python package
-│   └── __init__.py             # Package initialization
-├── go2_setup.bash              # Go2-specific environment setup script
-├── include/                     # C++ header files
-│   └── go2_pkg/                # C++ header directory
-├── launch/                      # Launch files
+├── go2w_pkg/                    # Python package
+│   └── __init__.py
+├── go2w_setup.bash              # Go2W-specific environment setup script
+├── include/go2w_pkg/            # C++ header directory (reserved)
+├── launch/
 │   ├── pc2ls.launch.py         # Point cloud to laser scan launcher
-│   └── robot_interface.launch.py  # Main Go2 robot interface launcher
+│   └── robot_interface.launch.py  # Main Go2W robot interface launcher
+├── maps/                        # Stored navigation maps
 ├── meshes/                      # 3D mesh files for robot visualization
-│   ├── calf.dae                # Calf mesh (Collada format)
-│   ├── calf_mirror.dae         # Mirrored calf mesh
-│   ├── foot.dae                # Foot mesh
-│   ├── go2_interface.stl       # Go2 interface mesh (STL format)
-│   ├── hip.dae                 # Hip mesh
-│   ├── thigh.dae               # Thigh mesh
-│   ├── thigh_mirror.dae        # Mirrored thigh mesh
-│   └── trunk.dae               # Main body trunk mesh
-├── scripts/                     # Executable Python scripts
-│   ├── go2_controller_commands.py  # Go2 control command handler
-│   ├── go2_read.py             # Go2 sensor data reader
-│   ├── go2_video_stream.py     # Go2 video stream handler
-│   └── go2_write.py            # Go2 command writer
-├── src/                         # C++ source files
-├── srv/                         # ROS2 service definitions
-│   ├── BodyHeight.srv          # Body height control service
-│   ├── ContinuousGait.srv      # Continuous gait control service
-│   ├── CurrentMode.srv         # Current mode query service
-│   ├── Euler.srv               # Euler angle control service
-│   ├── FootRaiseHeight.srv     # Foot raise height control service
-│   ├── LightControl.srv        # Light control service
-│   ├── Mode.srv                # Robot mode control service
-│   ├── MoveForward.srv         # Forward movement service
-│   ├── ObstacleAvoidance.srv   # Obstacle avoidance service
-│   ├── Pose.srv                # Pose control service
-│   ├── SpeedLevel.srv          # Speed level control service
-│   ├── SwitchGait.srv          # Gait switching service
-│   ├── SwitchJoystick.srv      # Joystick control service
-│   └── Turn.srv                # Turning control service
-├── urdf/                        # URDF robot description files
-│   └── go2_description.urdf    # Go2 robot description in URDF format
-├── xacro/                       # XACRO robot description files
-│   ├── const.xacro             # Constants and parameters
-│   ├── leg.xacro               # Leg definition macros
-│   ├── materials.xacro         # Material definitions
-│   └── robot.xacro             # Main robot description
-├── CMakeLists.txt              # CMake build configuration
-└── package.xml                 # Package manifest
+│   ├── base.dae                # Robot base mesh
+│   ├── calf.stl / calf_mirror.stl
+│   ├── foot.dae
+│   ├── go2w_interface.stl      # Go2W interface mesh
+│   ├── hip.dae
+│   ├── left_wheel.dae / right_wheel.dae  # Wheel meshes (Go2W-specific)
+│   └── thigh.dae / thigh_mirror.dae
+├── scripts/                     # Executable Python nodes
+│   ├── go2w_controller_commands.py  # Joystick/controller button handler
+│   ├── go2w_read.py            # Sensor data reader (lifecycle node)
+│   ├── go2w_video_stream.py    # Video stream publisher (lifecycle node)
+│   └── go2w_write.py           # Robot command writer (lifecycle node)
+├── urdf/
+│   └── robot.urdf              # Go2W robot description
+├── xacro/                       # XACRO files (reserved)
+├── CMakeLists.txt
+└── package.xml
 ```
 
-## Folder Explanations
+## Nodes
 
-### `action/`
-Contains ROS2 action interfaces for complex robot behaviors that require feedback and can be cancelled. Actions are used for long-running tasks like navigation goals or complex movements.
+### `go2w_read.py` — `robot_read_node`
 
-### `config/`
-Stores configuration files specific to the Go2 robot:
-- **Nav2 Parameters**: Navigation stack configuration files with robot-specific settings
-- **Point Cloud Processing**: Parameters for converting point cloud data to laser scan format
-- **Robot-Specific Settings**: Hardware-specific configurations and tuning parameters
+Lifecycle node that bridges Unitree DDS data into standard ROS 2 topics.
 
-### `go2_pkg/`
-Python package directory containing Python modules and utilities specific to the Go2 robot implementation.
+**Subscribes:**
+| Topic | Type | Description |
+|---|---|---|
+| `/lf/sportmodestate` | `unitree_go/SportModeState` | Sport mode state (IMU, position, velocity) |
+| `/lf/lowstate` | `unitree_go/LowState` | Low-level state (motors, battery, BMS) |
+| `/utlidar/cloud` | `sensor_msgs/PointCloud2` | Raw LiDAR point cloud |
 
-### `go2_setup.bash`
-Environment setup script that configures:
-- ROS2 environment variables
-- Network configuration for Go2 communication
-- Robot-specific IP settings and network interfaces
+**Publishes:**
+| Topic | Type | Description |
+|---|---|---|
+| `odom` | `nav_msgs/Odometry` | Robot odometry |
+| `imu/data` | `sensor_msgs/Imu` | IMU orientation, angular velocity, linear acceleration |
+| `imu_temp` | `std_msgs/Float32` | IMU temperature |
+| `pointcloud` | `sensor_msgs/PointCloud2` | Republished LiDAR cloud (frame: `radar`) |
+| `battery` | `sensor_msgs/BatteryState` | Battery voltage, current, and state of charge |
+| `joint_states` | `sensor_msgs/JointState` | All 16 joint positions and velocities |
+| `motor_temp` | `bot_custom_interfaces/MotorTemperature` | Per-motor temperatures |
 
-### `include/`
-C++ header files directory for any C++ implementations or libraries specific to the Go2 robot.
+Also broadcasts the `odom → base_link` TF transform.
 
-### `launch/`
-ROS2 launch files for starting Go2-specific nodes and services:
-- **Robot Interface**: Main launcher for all Go2 robot nodes and services
-- **Point Cloud Processing**: Launcher for point cloud to laser scan conversion
+---
 
-### `meshes/`
-3D mesh files for robot visualization and simulation:
-- **Collada (.dae)**: High-quality mesh files for detailed robot visualization
-- **STL (.stl)**: Standard mesh format for 3D printing and basic visualization
-- **Robot Components**: Individual mesh files for each robot part (legs, body, feet)
+### `go2w_write.py` — `lifecycle_robot_write_node`
 
-### `scripts/`
-Executable Python scripts for Go2 robot control:
-- **Controller Commands**: Handles high-level robot control commands
-- **Data Reading**: Reads sensor data and robot state information
-- **Video Streaming**: Manages camera and video stream functionality
-- **Command Writing**: Sends commands to the robot hardware
+Lifecycle node that translates ROS 2 commands into Unitree API requests and publishes robot status.
 
-### `src/`
-C++ source files directory for any C++ implementations specific to the Go2 robot.
+**Subscribes:**
+| Topic | Type | Description |
+|---|---|---|
+| `cmd_vel_out` | `geometry_msgs/Twist` | Velocity commands (forwarded when not in emergency stop) |
+| `/lf/sportmodestate` | `unitree_go/SportModeState` | Current op mode and gait type |
+| `/api/sport/response` | `unitree_api/Response` | Sport API response |
+| `/api/robot_state/response` | `unitree_api/Response` | Robot state API response |
+| `/api/vui/response` | `unitree_api/Response` | VUI (lights) API response |
 
-### `srv/`
-ROS2 service definitions for Go2 robot control:
-- **Movement Services**: Forward movement, turning, and pose control
-- **Mode Services**: Robot mode switching and status queries
-- **Hardware Services**: Light control, gait switching, and obstacle avoidance
-- **Configuration Services**: Body height, foot raise height, and speed control
+**Publishes:**
+| Topic | Type | Description |
+|---|---|---|
+| `/api/sport/request` | `unitree_api/Request` | Sport mode commands |
+| `/api/robot_state/request` | `unitree_api/Request` | Robot state commands |
+| `/api/vui/request` | `unitree_api/Request` | VUI (LED) commands |
+| `robot_status` | `bot_custom_interfaces/RobotStatus` | Emergency stop state and light state (2 Hz) |
 
-### `urdf/`
-URDF (Unified Robot Description Format) files that define the Go2 robot's physical structure, joints, and links for simulation and visualization.
+**Services:**
+| Service | Type | Description |
+|---|---|---|
+| `mode` | `bot_custom_interfaces/Mode` | Switch mode: `damp`, `balance_stand`, `stand_up`, `stand_down` |
+| `speed_level` | `bot_custom_interfaces/SpeedLevel` | Set speed level in range `[-1.0, 1.0]` |
+| `current_mode` | `bot_custom_interfaces/CurrentMode` | Get current mode string |
+| `emergency_stop` | `std_srvs/SetBool` | Toggle emergency stop (stops motion and damps the robot) |
+| `light_control` | `bot_custom_interfaces/LightControl` | Set LED brightness `[1–10]` or turn off |
 
-### `xacro/`
-XACRO (XML Macros) files that provide a more flexible way to define robot descriptions:
-- **Modular Design**: Separate files for different robot components
-- **Parameterization**: Configurable parameters and constants
-- **Reusability**: Macro definitions for repeated components like legs
+---
+
+### `go2w_controller_commands.py` — `controller_commands_node`
+
+Lifecycle node that maps physical controller button presses to robot service calls at 10 Hz.
+
+**Button Mappings:**
+| Button Combo | Action |
+|---|---|
+| `start` | `balance_stand` (or exit pose mode if in mode 2) |
+| `select` | Enter pose mode |
+| `L2 + A` | Toggle `stand_up` / `stand_down` |
+| `L2 + B` | `damp` |
+| `L2 + start` | Switch gait 2 |
+| `right + start` | Switch gait 3 |
+| `left + start` | Switch gait 4 |
+| `L2 + X` | `recovery_stand` |
+| `R2 + A` | `stretch` |
+| `R2 + B` | `hello` |
+| `R2 + Y` | `finger_heart` |
+| `R1 + X` | `front_pounce` |
+| `R1 + A` | `front_jump` |
+| `R1 + B` | `sit` (or `rise_sit` if already sitting) |
+| `L1 + B` | `dance1` |
+
+---
+
+### `go2w_video_stream.py` — `robot_video_stream`
+
+Lifecycle node that captures the Go2W's onboard H.264 camera stream via GStreamer and publishes it as ROS 2 image topics at 24 fps.
+
+- **Stream source:** UDP multicast `230.1.1.1:1720` on interface `eno1`
+- **Resolution:** 1280×720
+
+**Publishes:**
+| Topic | Type | Description |
+|---|---|---|
+| `camera` | `sensor_msgs/Image` | Raw BGR image (1280×720) |
+| `compressed_camera` | `sensor_msgs/CompressedImage` | JPEG compressed image (640×360, quality 20) |
+
+> **Note:** The video stream node is commented out in `robot_interface.launch.py` and must be enabled manually if needed.
+
+---
+
+## Launch Files
+
+### `robot_interface.launch.py`
+
+Starts the full Go2W robot interface:
+- `go2w_read_node`
+- `go2w_write_node`
+- `controller_commands_node`
+- Point cloud to laser scan (`pc2ls.launch.py`)
+
+The robot namespace and TF prefix are read from `robot_config.yaml`.
+
+### `pc2ls.launch.py`
+
+Converts the `pointcloud` topic to a `LaserScan` using the `pointcloud_to_laserscan` package, using parameters from `config/pointcloud_to_laserscan_params.yaml`.
+
+---
+
+## Configuration
+
+### `go2w_setup.bash`
+
+Environment setup script that:
+1. Reads `network_interface` from `robot_config.yaml`
+2. Sets `RMW_IMPLEMENTATION=rmw_cyclonedds_cpp` and `CYCLONEDDS_URI` pointing to `cyclonedds_config.xml`
+3. Configures the Ethernet interface with a static IP (`192.168.123.170/16`) to communicate with the Go2W
+
+Source this script before launching the robot interface:
+```bash
+source botbrain_ws/src/go2w_pkg/go2w_setup.bash
+```
+
+### `config/camera_config.yaml`
+
+Defines TF frames and serial numbers for the RealSense depth cameras:
+- **Front:** D435i (serial `420122071637`), mounted at `botbrain_base`
+- **Back:** slot reserved, currently unconfigured
+
+---
+
+## Dependencies
+
+- `rclpy`, `rclcpp`
+- `unitree_go` — Unitree Go2 message types (`LowState`, `SportModeState`)
+- `unitree_api` — Unitree API request/response messages
+- `bot_custom_interfaces` — Custom BotBrain service and message types
+- `joystick_bot` — Controller button state messages
+- `nav_msgs`, `sensor_msgs`, `geometry_msgs`, `std_msgs`, `std_srvs`
+- `tf2_ros`
+- `cv2` + `cv_bridge` (video stream node)
+- `pointcloud_to_laserscan`
+
+---
 
 ## Contributing
 
 1. **Create Feature Branch**: Create a new branch from `dev` named `feature/[name_of_feature]`
-2. **Development**: Make your changes following Go2-specific patterns
-3. **Testing**: Test with actual Go2 robot hardware
+2. **Development**: Make your changes following the Go2W-specific patterns
+3. **Testing**: Test with actual Go2W robot hardware
 4. **Documentation**: Update this README with any new features or changes
 5. **Submit Pull Request**: Create a pull request to the `dev` branch
 
 ---
 
-**Note**: This package is specifically designed for the Unitree Go2 robot. Ensure proper hardware connection and Go2 SDK installation before use.
-# go2w_pkg
+**Note:** This package is specifically designed for the Unitree Go2W robot. Ensure the robot is powered on, the Ethernet interface is correctly configured via `go2w_setup.bash`, and the Unitree SDK DDS bridge is running before launching.
