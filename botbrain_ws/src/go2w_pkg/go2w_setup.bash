@@ -69,32 +69,4 @@ else
 
         echo "Interface $IFACE has been reconfigured successfully."
     fi
-
-    # === Step 1b: Find the active connection name for the specified interface ===
-    # echo "Searching for the active connection on interface $IFACE4G..."
-    # CONNECTION_NAME4G=$(nmcli -t -f DEVICE,NAME connection show --active | grep "^$IFACE4G" | cut -d':' -f2)
-
-    # if [ -z "$CONNECTION_NAME4G" ]; then
-    #     echo "Error: No active connection found on interface $IFACE4G. Please ensure the interface is connected and has a profile."
-    # else
-    #     echo "Found active connection: '$CONNECTION_NAME4G'"
-    
-    #     # === Step 2b: Modify the connection's IPv4 settings ===
-    #     echo "Modifying connection '$CONNECTION_NAME4G' with new IP: $IP4G..."
-
-    #     # Set the IPv4 method to manual (static IP)
-    #     sudo nmcli connection modify "$CONNECTION_NAME4G" ipv4.method manual
-
-    #     # Set the new IP address and netmask
-    #     sudo nmcli connection modify "$CONNECTION_NAME4G" ipv4.addresses "$IP4G/24"
-
-    #     # Set the new gateway
-    #     sudo nmcli connection modify "$CONNECTION_NAME4G" ipv4.gateway "$GATEWAY4G"
-
-    #     # === Step 3b: Reapply the connection to make changes take effect ===
-    #     echo "Reapplying connection '$CONNECTION_NAME4G' to activate the new settings."
-    #     sudo nmcli connection up "$CONNECTION_NAME4G"
-
-    #     echo "Interface $IFACE4G has been reconfigured successfully."
-    # fi
 fi
