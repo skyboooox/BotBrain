@@ -26,6 +26,7 @@ def generate_launch_description():
         config = yaml.safe_load(f)['robot_configuration']
     
     robot_name = config['robot_name']
+    network_interface = config['network_interface']
     prefix = robot_name + '/' if robot_name != '' else ''
 
     # --- Lifecycle nodes ---
@@ -58,7 +59,7 @@ def generate_launch_description():
     go2w_video_stream_node = LifecycleNode(
         package = 'go2w_pkg',
         executable = 'go2w_video_stream.py',
-        parameters=[{'prefix': (prefix)}],
+        parameters=[{'prefix': (prefix), 'network_interface': network_interface}],
         name='robot_video_stream',
         namespace=robot_name,
         output='screen'
@@ -162,7 +163,7 @@ def generate_launch_description():
             go2w_read_node ,
             go2w_write_node,
             controller_commands_node,
-            # go2w_video_stream_node,
+            go2w_video_stream_node,
             # Handlers
             # configure_handler_for_write,
             # activate_handler_for_write,
