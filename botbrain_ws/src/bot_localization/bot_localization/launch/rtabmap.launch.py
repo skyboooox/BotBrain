@@ -20,12 +20,8 @@ def generate_launch_description():
     robot_package_name = f"{robot_model}_pkg"
     default_map = _raw_robot.get('default_map') or 'rtabmap.db'
 
-    # Define the database path centrally
-    database_path = os.path.join(
-        get_package_share_directory(robot_package_name),
-        'maps',
-        default_map
-    )
+    # Define the database path
+    database_path = os.path.join(workspace_dir, 'src', robot_package_name, 'maps', default_map)
 
     camera_cfg_file = os.path.join(
         get_package_share_directory(robot_package_name),
