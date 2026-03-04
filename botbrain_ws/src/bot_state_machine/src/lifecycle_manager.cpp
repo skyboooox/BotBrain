@@ -92,6 +92,10 @@ LifecycleManager::on_cleanup(const rclcpp_lifecycle::State & previous_state)
     transition_subs_.clear();
     change_state_srvs_.clear();
     get_state_srvs_.clear();
+    {
+        std::lock_guard<std::mutex> lock(cache_mutex_);
+        state_cache_.clear();
+    }
     nodes_.clear();
     status_pub_.reset();
   
@@ -195,6 +199,10 @@ void LifecycleManager::command_srv_callback(
 void LifecycleManager::transition_callback(const std::string& node_name,
     const lifecycle_msgs::msg::TransitionEvent::SharedPtr msg)
 {
+    {
+        std::lock_guard<std::mutex> lock(cache_mutex_);
+        state_cache_[node_name] = msg->goal_state.label;
+    }
     const uint8_t goal = msg->goal_state.id;
     if (controller_)
         controller_->add_event(PendingEvent{node_name, goal});
@@ -259,6 +267,12 @@ void LifecycleManager::create_comms()
         get_state_srvs_.emplace(n.name, get_cli);
     }
 
+    {
+        std::lock_guard<std::mutex> lock(cache_mutex_);
+        for (const auto &n : nodes_)
+            state_cache_[n.name] = "unknown";
+    }
+
     print_info("Watching " + std::to_string(transition_subs_.size()) + " transition_event topics.");
 }
 
@@ -274,21 +288,15 @@ void LifecycleManager::publish_callback()
     bot_custom_interfaces::msg::StatusArray msg;
     msg.header.stamp = this->now();
 
+    std::lock_guard<std::mutex> lock(cache_mutex_);
     for (const auto &n : nodes_)
     {
         bot_custom_interfaces::msg::Status item;
         item.name = n.name;
         item.display_name = n.display_name;
 
-        auto st = get_state(n.name);  // poll current lifecycle state
-        if(!st)
-        {
-            item.status = "ERROR";
-        }
-        else
-        {
-            item.status = st->label;
-        }
+        auto it = state_cache_.find(n.name);
+        item.status = (it != state_cache_.end()) ? it->second : "unknown";
 
         msg.containers.push_back(item);
     }
