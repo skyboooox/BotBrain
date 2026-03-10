@@ -74,6 +74,12 @@ private:
     std::unordered_map<std::string,
         rclcpp::Subscription<lifecycle_msgs::msg::TransitionEvent>::SharedPtr> transition_subs_;
 
+    // Cached lifecycle state label per node, updated from transition events.
+    std::unordered_map<std::string, std::string> state_cache_;
+
+    // Protects state_cache_ from concurrent reads/writes.
+    std::mutex cache_mutex_;
+
 public:
     // Constructor.
     LifecycleManager();
