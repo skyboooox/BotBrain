@@ -185,7 +185,7 @@
       footprint: "[[0.360, 0.20], [0.360, -0.20], [-0.450, -0.20], [-0.450, 0.20]]"
       transform_tolerance: 0.5
 
-      plugins: ["obstacle_layer_front", "obstacle_layer_back", "inflation_layer"]
+      plugins: ["static_layer", "obstacle_layer_front", <back_obstacle_layer>"inflation_layer"]
 
       obstacle_layer_front:
         plugin: "nav2_costmap_2d::ObstacleLayer"
@@ -250,7 +250,7 @@
       footprint: "[[0.360, 0.20], [0.360, -0.20], [-0.450, -0.20], [-0.450, 0.20]]"
       track_unknown_space: true
       transform_tolerance: 2.0
-      plugins: ["static_layer", "obstacle_layer_front", "obstacle_layer_back", "inflation_layer"]
+      plugins: ["static_layer", "obstacle_layer_front", <back_obstacle_layer>"inflation_layer"]
       static_layer:
         plugin: "nav2_costmap_2d::StaticLayer"
         map_subscribe_transient_local: True
