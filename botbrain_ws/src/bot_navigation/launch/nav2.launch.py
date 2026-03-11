@@ -21,9 +21,20 @@ def generate_launch_description():
     params_file = os.path.join(get_package_share_directory(f'{robot_model}_pkg'),
                                          'config', 'nav2_params.yaml')
 
+    camera_cfg_file = os.path.join(get_package_share_directory(f'{robot_model}_pkg'),
+                                   'config', 'camera_config.yaml')
+    with open(camera_cfg_file, 'r') as f:
+        _cam = yaml.safe_load(f)['camera_configuration']
+    has_back_camera = bool((_cam.get('back') or {}).get('type', ''))
+    back_layer_token = '"obstacle_layer_back", ' if has_back_camera else ''
+
     params_file = ReplaceString(
         source_file=params_file,
         replacements={'<prefix>': prefix})
+
+    params_file = ReplaceString(
+        source_file=params_file,
+        replacements={'<back_obstacle_layer>': back_layer_token})
 
     use_sim_time = True
     autostart = True
