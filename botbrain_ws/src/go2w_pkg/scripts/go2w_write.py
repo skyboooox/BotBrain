@@ -163,7 +163,7 @@ class RobotWriteNode(LifecycleNode):
         self.robot_state_response = msg
 
     def cmd_vel_subscription_callback(self, msg):
-        if self.emergency_flag and self.op_mode==1:
+        if self.emergency_flag and (self.op_mode==1 or self.op_mode==3):
             req_cmd_vel = Request()
             req_cmd_vel.header.identity.api_id = 1008
 
