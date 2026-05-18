@@ -152,6 +152,28 @@ CREATE TABLE IF NOT EXISTS public.waypoints (
 CREATE INDEX IF NOT EXISTS idx_waypoints_mission_id ON public.waypoints(mission_id);
 
 -- =============================================
+-- Table: dashboard_layouts
+-- Stores saved dashboard layout configurations
+-- =============================================
+CREATE TABLE IF NOT EXISTS public.dashboard_layouts (
+    id          UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id     UUID        REFERENCES auth.users(id) ON DELETE CASCADE,
+    name        TEXT        NOT NULL,
+    description TEXT,
+    layout_data JSONB       NOT NULL,
+    is_public   BOOLEAN     DEFAULT FALSE,
+    is_favorite BOOLEAN     DEFAULT FALSE,
+    created_at  TIMESTAMPTZ DEFAULT timezone('utc', now()),
+    updated_at  TIMESTAMPTZ DEFAULT timezone('utc', now())
+);
+
+-- Indexes for faster queries
+CREATE INDEX IF NOT EXISTS idx_dashboard_layouts_user_id
+    ON public.dashboard_layouts(user_id);
+CREATE INDEX IF NOT EXISTS idx_dashboard_layouts_created_at
+    ON public.dashboard_layouts(created_at DESC);
+
+-- =============================================
 -- Trigger: Auto-update updated_at timestamp
 -- =============================================
 CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -161,6 +183,23 @@ BEGIN
     RETURN NEW;
 END;
 $$ language 'plpgsql';
+
+-- =============================================
+-- Function: Ensure only one favorite dashboard layout per user
+-- =============================================
+CREATE OR REPLACE FUNCTION public.ensure_single_favorite_layout()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.is_favorite IS TRUE THEN
+        UPDATE public.dashboard_layouts
+           SET is_favorite = FALSE
+         WHERE user_id = NEW.user_id
+           AND id <> NEW.id
+           AND is_favorite = TRUE;
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
 
 -- Apply trigger to all tables with updated_at column
 CREATE TRIGGER update_robots_updated_at
@@ -178,6 +217,17 @@ CREATE TRIGGER update_missions_updated_at
 CREATE TRIGGER update_waypoints_updated_at
     BEFORE UPDATE ON public.waypoints
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_dashboard_layouts_updated_at ON public.dashboard_layouts;
+CREATE TRIGGER update_dashboard_layouts_updated_at
+    BEFORE UPDATE ON public.dashboard_layouts
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- Enforce single favorite layout per user
+DROP TRIGGER IF EXISTS ensure_single_favorite_layout_trigger ON public.dashboard_layouts;
+CREATE TRIGGER ensure_single_favorite_layout_trigger
+    BEFORE INSERT OR UPDATE OF is_favorite ON public.dashboard_layouts
+    FOR EACH ROW EXECUTE FUNCTION public.ensure_single_favorite_layout();
 
 -- =============================================
 -- Function: Auto-create user profile on signup
@@ -215,6 +265,7 @@ ALTER TABLE public.user_profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.audit_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.missions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.waypoints ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.dashboard_layouts ENABLE ROW LEVEL SECURITY;
 
 -- =============================================
 -- Robots Policies
@@ -314,6 +365,26 @@ CREATE POLICY "Users can delete waypoints of their missions"
         WHERE missions.id = waypoints.mission_id
         AND missions.user_id = auth.uid()
     ));
+
+-- =============================================
+-- Dashboard Layouts Policies
+-- =============================================
+CREATE POLICY "Users can view their own or public layouts"
+    ON public.dashboard_layouts FOR SELECT
+    USING (auth.uid() = user_id OR is_public = TRUE);
+
+CREATE POLICY "Users can insert their own layouts"
+    ON public.dashboard_layouts FOR INSERT
+    WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update their own layouts"
+    ON public.dashboard_layouts FOR UPDATE
+    USING (auth.uid() = user_id)
+    WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete their own layouts"
+    ON public.dashboard_layouts FOR DELETE
+    USING (auth.uid() = user_id);
 ```
 
 ---
@@ -419,6 +490,7 @@ CREATE POLICY "Public can view avatars"
 | `audit_logs` | Activity logging for debugging and compliance |
 | `missions` | Navigation mission definitions |
 | `waypoints` | Navigation waypoints within missions |
+| `dashboard_layouts` | Saved dashboard layout configurations (per user, optionally public) |
 
 ---
 
